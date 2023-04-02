@@ -36,7 +36,6 @@ if __name__ == '__main__':
     for i in range(7):
         frozen_df[f'frozen_age_{i}'] = 0.5 * (frozen_df[f'frozen_age_{i}'] + frozen_df[f'frozen_150_age_{i}'])
     lgbm_df = add_prefix(pd.read_csv(ARTIFACTS_PATH / 'lgbm.csv'), 'lgbm')
-    print(lgbm_df.head())
 
     targets = pq.read_table(LOCAL_DATA_PATH / TARGET_FILE).to_pandas()
     targets = targets[targets['is_male'] != 'NA']
@@ -63,7 +62,6 @@ if __name__ == '__main__':
     stacker = LogisticRegression()
     stacker.fit(train_data, train_target)
     test_predicted = stacker.predict_proba(test_data)[:, 1]
-    print(stacker.coef_)
 
     print(f'GINI stacked {2 * m.roc_auc_score(test_target, test_predicted) - 1:2.5f}')
 

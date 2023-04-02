@@ -52,5 +52,3 @@ if __name__ == '__main__':
 
     data_agg = data_agg.drop('cluster_id_sum', axis='columns')
     data_agg.to_csv(ARTIFACTS_PATH / f'{name_prefix}clusters_{num_clusters}.csv', index=False)
-
-    print(data_agg.head(10))

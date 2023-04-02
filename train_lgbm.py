@@ -31,7 +31,6 @@ if __name__ == '__main__':
 
     agg_users = data.select(['user_id', 'price']).group_by('user_id').aggregate([('price', 'mean')]).to_pandas()
     agg_users['price_mean'] = agg_users['price_mean'].fillna(0.0)
-    agg_users.head()
 
     targets = pq.read_table(LOCAL_DATA_PATH / TARGET_FILE)
     common_hosts = pd.read_csv(ARTIFACTS_PATH / 'frequent_items.csv').fillna('')
@@ -44,9 +43,6 @@ if __name__ == '__main__':
     features = features.merge(pd.read_csv(ARTIFACTS_PATH / 'normal_clusters_192.csv'), on='user_id', how='left')
     features = features.merge(pd.read_csv(ARTIFACTS_PATH / 'clusters_256.csv'), on='user_id', how='left')
     features = features.merge(pd.read_csv(ARTIFACTS_PATH / 'request_frequency.csv'), on='user_id', how='left')
-
-    print(CUSTOM_CATEGORICAL_FEATURES)
-    print(common_hosts.head())
 
     data_agg = data.select(['user_id', 'url_host', 'request_cnt']).\
         group_by(['user_id', 'url_host']).aggregate([('request_cnt', 'sum')])
@@ -131,9 +127,6 @@ if __name__ == '__main__':
     for idx in best_indices:
         print(clf.feature_importances_[idx], list(x_train.columns)[idx])
 
-    y_lgbm = clf.predict_proba(x_test)[:, 1]
-    print(f'GINI по полу {2 * m.roc_auc_score(y_test, y_lgbm) - 1:2.4f}')
-
     test_df = usr_emb
     test_df = test_df.merge(features, how='left', on='user_id')
 
@@ -143,7 +136,6 @@ if __name__ == '__main__':
     lgbm_prediction = clf.predict_proba(test_df.drop(['user_id'], axis=1))[:, 1]
     submission = test_df[['user_id']].copy()
     submission['is_male'] = lgbm_prediction
-    submission.head()
 
     df = usr_targets.merge(usr_emb, how='inner', on=['user_id'])
     df = df[df['is_male'] != 'NA']
